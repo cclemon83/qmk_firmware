@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 // #include "drashna.h"
+// #include "joystick.h"
 #include "analog.h"
 #include "pointing_device.h"
 
@@ -226,96 +227,96 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 #endif // OLED_ENABLE
 
-#ifdef MASTER_LEFT
+// #ifdef MASTER_LEFT
 
-// Set Parameters
-uint16_t minAxisValuer = 190;  // Depends on each stick
-uint16_t maxAxisValuer = 840;
+// // Set Parameters
+// uint16_t minAxisValuer = 0;  // Depends on each stick
+// uint16_t maxAxisValuer = 1023;
 
-uint8_t maxCursorSpeedr = 2;
-uint8_t speedRegulatorr = 5;  // Lower Values Create Faster Movement
+// uint8_t maxCursorSpeedr = 2;
+// uint8_t speedRegulatorr = 5;  // Lower Values Create Faster Movement
 
-int8_t xPolarity = -1;
-int8_t yPolarity = 1;
-int8_t hPolarity = 1;
-int8_t vPolarity = 1;
+// int8_t xPolarity = -1;
+// int8_t yPolarity = 1;
+// int8_t hPolarity = 1;
+// int8_t vPolarity = 1;
 
-uint8_t cursorTimeout = 10;
-uint8_t scrollTimeout = 100;
+// uint8_t cursorTimeout = 10;
+// uint8_t scrollTimeout = 100;
 
-int16_t xOrigin, yOrigin;
+// int16_t xOrigin, yOrigin;
 
-uint16_t lastCursorr = 0;
+// uint16_t lastCursorr = 0;
 
-int16_t axisCoordinater(uint8_t pin, uint16_t origin) {
-   int8_t  direction;
-   int16_t distanceFromOrigin;
-   int16_t range;
+// int16_t axisCoordinater(uint8_t pin, uint16_t origin) {
+//    int8_t  direction;
+//    int16_t distanceFromOrigin;
+//    int16_t range;
 
-   int16_t position = analogReadPin(pin);
+//    int16_t position = analogReadPin(pin);
 
-   if (origin == position) {
-       return 0;
-   } else if (origin > position) {
-       distanceFromOrigin = origin - position;
-       range              = origin - minAxisValuer;
-       direction          = -1;
-   } else {
-       distanceFromOrigin = position - origin;
-       range              = maxAxisValuer - origin;
-       direction          = 1;
-   }
+//    if (origin == position) {
+//        return 0;
+//    } else if (origin > position) {
+//        distanceFromOrigin = origin - position;
+//        range              = origin - minAxisValuer;
+//        direction          = -1;
+//    } else {
+//        distanceFromOrigin = position - origin;
+//        range              = maxAxisValuer - origin;
+//        direction          = 1;
+//    }
 
-   float   percent    = (float)distanceFromOrigin  / range;
-   int16_t coordinate = (int16_t)(percent * 127);
-   if (coordinate < 0) {
-       return 0;
-   } else if (coordinate > 127) {
-       return 127 * direction;
-   } else {
-       return coordinate * direction;
-   }
-}
+//    float   percent    = (float)distanceFromOrigin  / range;
+//    int16_t coordinate = (int16_t)(percent * 127);
+//    if (coordinate < 0) {
+//        return 0;
+//    } else if (coordinate > 127) {
+//        return 127 * direction;
+//    } else {
+//        return coordinate * direction;
+//    }
+// }
 
-int8_t axisToMouseComponentr(uint8_t pin, int16_t origin, uint8_t maxSpeed, int8_t polarity) {
-   int coordinate = axisCoordinater(pin, origin);
-   if (coordinate == 0) {
-       return 0;
-   } else {
-       float percent = (float)coordinate / 127;
-       return percent * maxSpeed * polarity * (abs(coordinate) / speedRegulatorr);
-   }
-}
+// int8_t axisToMouseComponentr(uint8_t pin, int16_t origin, uint8_t maxSpeed, int8_t polarity) {
+//    int coordinate = axisCoordinater(pin, origin);
+//    if (coordinate == 0) {
+//        return 0;
+//    } else {
+//        float percent = (float)coordinate / 127;
+//        return percent * maxSpeed * polarity * (abs(coordinate) / speedRegulatorr);
+//    }
+// }
 
-void pointing_device_task(void) {
+// void pointing_device_task(void) {
 
-   if (is_keyboard_master() == true){
-   report_mouse_t report = pointing_device_get_report();
+//    if (!is_keyboard_master()){
+//    report_mouse_t report = pointing_device_get_report();
 
-   if(layer_state_is(L_RAISE)) {
-       if (timer_elapsed(lastCursorr) > scrollTimeout) {
-           lastCursorr = timer_read();
-           report.h   = axisToMouseComponentr(B4, xOrigin, maxCursorSpeedr, hPolarity);
-           report.v   = axisToMouseComponentr(B5, yOrigin, maxCursorSpeedr, vPolarity);
-       }
-   } else {
-       if (timer_elapsed(lastCursorr) > cursorTimeout) {
-           lastCursorr = timer_read();
-           report.x   = axisToMouseComponentr(B4, xOrigin, maxCursorSpeedr, xPolarity);
-           report.y   = axisToMouseComponentr(B5, yOrigin, maxCursorSpeedr, yPolarity);
-       }
-   }
+//    if(layer_state_is(L_RAISE)) {
+//        if (timer_elapsed(lastCursorr) > scrollTimeout) {
+//            lastCursorr = timer_read();
+//            report.h   = axisToMouseComponentr(B4, xOrigin, maxCursorSpeedr, hPolarity);
+//            report.v   = axisToMouseComponentr(B5, yOrigin, maxCursorSpeedr, vPolarity);
+//        }
+//    } else {
+//        if (timer_elapsed(lastCursorr) > cursorTimeout) {
+//            lastCursorr = timer_read();
+//            report.x   = axisToMouseComponentr(B4, xOrigin, maxCursorSpeedr, xPolarity);
+//            report.y   = axisToMouseComponentr(B5, yOrigin, maxCursorSpeedr, yPolarity);
+//        }
+//    }
 
-   pointing_device_set_report(report);
-   pointing_device_send();
+//    pointing_device_set_report(report);
+//    pointing_device_send();
 
-   }
-}
+//    }
+// }
 
-void matrix_init_user(void) {
-   if (is_keyboard_master() == true){
-   xOrigin = analogReadPin(B4);
-   yOrigin = analogReadPin(B5);
-   }
-}
-#endif
+// void matrix_init_user(void) {
+//    if (!is_keyboard_master()){
+//    xOrigin = analogReadPin(B4);
+//    yOrigin = analogReadPin(B5);
+//    }
+// }
+// #endif

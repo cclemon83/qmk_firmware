@@ -25,10 +25,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define MASTER_RIGHT
 // #define EE_HANDS
 
-#define ANALOG_JOYSTICK_X_AXIS_PIN B4
-#define ANALOG_JOYSTICK_Y_AXIS_PIN B5
+#ifdef POINTING_DEVICE_ENABLE
+    #define POINTING_DEVICE_RIGHT
+    #define ANALOG_JOYSTICK_X_AXIS_PIN B4
+    #define ANALOG_JOYSTICK_Y_AXIS_PIN B5
 
-#define ANALOG_JOYSTICK_CLICK_PIN E6
+    // #define ANALOG_JOYSTICK_CLICK_PIN E6
+
+    // #define ANALOG_JOYSTICK_AXIS_MIN 0
+    // #define ANALOG_JOYSTICK_AXIS_MAX 1023
+
+    // #define ANALOG_JOYSTICK_SPEED_MAX 2
+    // #define ANALOG_JOYSTICK_SPEED_REGULATOR 5
+#endif
+
+
+#ifdef JOYSTICK_ENABLE
+  #define JOYSTICK_BUTTON_COUNT 16
+  #define JOYSTICK_AXES_COUNT 2
+  #define JOYSTICK_AXES_RESOLUTION 10
+#endif
 
 #ifdef RGBLIGHT_ENABLE
     // #define RGBLIGHT_EFFECT_BREATHING
@@ -37,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // #define RGBLIGHT_EFFECT_SNAKE
     // #define RGBLIGHT_EFFECT_KNIGHT
     // #define RGBLIGHT_EFFECT_CHRISTMAS
-    #define RGBLIGHT_EFFECT_STATIC_GRADIENT
+    // #define RGBLIGHT_EFFECT_STATIC_GRADIENT
 //  #define RGBLIGHT_EFFECT_RGB_TEST
 //  #define RGBLIGHT_EFFECT_ALTERNATING
 //  #define RGBLIGHT_EFFECT_TWINKLE
