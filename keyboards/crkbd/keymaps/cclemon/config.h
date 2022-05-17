@@ -21,22 +21,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DYNAMIC_KEYMAP_LAYER_COUNT 7
 /* Select hand configuration */
 
-#define MASTER_LEFT
-// #define MASTER_RIGHT
+// #define MASTER_LEFT
+#define MASTER_RIGHT
 // #define EE_HANDS
 
 #ifdef POINTING_DEVICE_ENABLE
-    #define POINTING_DEVICE_RIGHT
-    #define ANALOG_JOYSTICK_X_AXIS_PIN B4
-    #define ANALOG_JOYSTICK_Y_AXIS_PIN B5
+    // #define POINTING_DEVICE_RIGHT
+    #define PIMORONI_TRACKBALL_ENABLE
+    #define PIMORONI_TRACKBALL_CLICK
+    // orientation pimoroni text on top and trackball text at the bottom
+    #define PIMORONI_TRACKBALL_ROTATE
+    // #define PIMORONI_TRACKBALL_INVERT_X
+    // #define PIMORONI_TRACKBALL_INVERT_Y
 
-    // #define ANALOG_JOYSTICK_CLICK_PIN E6
+    // #define SPLIT_OLED_ENABLE
+    //#define OLED_FONT_H "keyboards/crkbd/lib/glcdfont.c""
 
-    // #define ANALOG_JOYSTICK_AXIS_MIN 0
-    // #define ANALOG_JOYSTICK_AXIS_MAX 1023
+    #define PIMORONI_TRACKBALL_SCALE 4
 
-    // #define ANALOG_JOYSTICK_SPEED_MAX 2
-    // #define ANALOG_JOYSTICK_SPEED_REGULATOR 5
 #endif
 
 
