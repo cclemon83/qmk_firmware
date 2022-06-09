@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include QMK_KEYBOARD_H
 // #include "drashna.h"
 // #include "joystick.h"
-#include "analog.h"
+// #include "analog.h"
 #include "pointing_device.h"
+#include "drivers/sensors/pimoroni_trackball.h"
 
-#define KC_X0 LT(_FN, KC_ESC)
 #define L_BASE 0
 #define L_LOWER 2
 #define L_RAISE 4
@@ -119,39 +119,63 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #include <stdio.h>
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-  if (!is_keyboard_master()) {
+
     return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
-  }
-  return rotation;
 }
 
 void oled_render_layer_state(void) {
     oled_write_P(PSTR("Layer: "), false);
     switch (layer_state) {
         case L_BASE:
+
             if(biton32(default_layer_state) == 0){
                 oled_write_ln_P(PSTR("Default"), false);
             } else {
                 oled_write_ln_P(PSTR("Option_Default"), false);
             }
+
             break;
         case L_LOWER:
             oled_write_ln_P(PSTR("Lower"), false);
+
+            // ポインティング速度をスローに設定
+            pointing_device_set_cpi(19000);
+
+            // トラックボールのrgb 青色
+            pimoroni_trackball_set_rgbw(0,0,255,80);
+
             break;
         case L_RAISE:
             oled_write_ln_P(PSTR("Raise"), false);
+
+            // ポインティング速度を通常速度に設定
+            pointing_device_set_cpi(40000);
+
+            // トラックボールのrgb 赤色
+            pimoroni_trackball_set_rgbw(255,0,0,80);
+
+
             break;
         case L_ADJUST:
         case L_ADJUST|L_LOWER:
         case L_ADJUST|L_RAISE:
         case L_ADJUST|L_LOWER|L_RAISE:
+
             oled_write_ln_P(PSTR("Adjust"), false);
+
+            // ポインティング速度をFastに設定
+            pointing_device_set_cpi(65000);
+            // トラックボールのrgb 緑色
+            pimoroni_trackball_set_rgbw(0,255,0,80);
+
             break;
         case L_OPTION_LOWER:
             oled_write_ln_P(PSTR("Option_Lower"), false);
+
             break;
         case L_OPTION_RAISE:
             oled_write_ln_P(PSTR("Option_Raise"), false);
+
             break;
     }
 }
@@ -227,96 +251,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 #endif // OLED_ENABLE
 
-// #ifdef MASTER_LEFT
-
-// // Set Parameters
-// uint16_t minAxisValuer = 0;  // Depends on each stick
-// uint16_t maxAxisValuer = 1023;
-
-// uint8_t maxCursorSpeedr = 2;
-// uint8_t speedRegulatorr = 5;  // Lower Values Create Faster Movement
-
-// int8_t xPolarity = -1;
-// int8_t yPolarity = 1;
-// int8_t hPolarity = 1;
-// int8_t vPolarity = 1;
-
-// uint8_t cursorTimeout = 10;
-// uint8_t scrollTimeout = 100;
-
-// int16_t xOrigin, yOrigin;
-
-// uint16_t lastCursorr = 0;
-
-// int16_t axisCoordinater(uint8_t pin, uint16_t origin) {
-//    int8_t  direction;
-//    int16_t distanceFromOrigin;
-//    int16_t range;
-
-//    int16_t position = analogReadPin(pin);
-
-//    if (origin == position) {
-//        return 0;
-//    } else if (origin > position) {
-//        distanceFromOrigin = origin - position;
-//        range              = origin - minAxisValuer;
-//        direction          = -1;
-//    } else {
-//        distanceFromOrigin = position - origin;
-//        range              = maxAxisValuer - origin;
-//        direction          = 1;
-//    }
-
-//    float   percent    = (float)distanceFromOrigin  / range;
-//    int16_t coordinate = (int16_t)(percent * 127);
-//    if (coordinate < 0) {
-//        return 0;
-//    } else if (coordinate > 127) {
-//        return 127 * direction;
-//    } else {
-//        return coordinate * direction;
-//    }
-// }
-
-// int8_t axisToMouseComponentr(uint8_t pin, int16_t origin, uint8_t maxSpeed, int8_t polarity) {
-//    int coordinate = axisCoordinater(pin, origin);
-//    if (coordinate == 0) {
-//        return 0;
-//    } else {
-//        float percent = (float)coordinate / 127;
-//        return percent * maxSpeed * polarity * (abs(coordinate) / speedRegulatorr);
-//    }
-// }
-
-// void pointing_device_task(void) {
-
-//    if (!is_keyboard_master()){
-//    report_mouse_t report = pointing_device_get_report();
-
-//    if(layer_state_is(L_RAISE)) {
-//        if (timer_elapsed(lastCursorr) > scrollTimeout) {
-//            lastCursorr = timer_read();
-//            report.h   = axisToMouseComponentr(B4, xOrigin, maxCursorSpeedr, hPolarity);
-//            report.v   = axisToMouseComponentr(B5, yOrigin, maxCursorSpeedr, vPolarity);
-//        }
-//    } else {
-//        if (timer_elapsed(lastCursorr) > cursorTimeout) {
-//            lastCursorr = timer_read();
-//            report.x   = axisToMouseComponentr(B4, xOrigin, maxCursorSpeedr, xPolarity);
-//            report.y   = axisToMouseComponentr(B5, yOrigin, maxCursorSpeedr, yPolarity);
-//        }
-//    }
-
-//    pointing_device_set_report(report);
-//    pointing_device_send();
-
-//    }
-// }
-
-// void matrix_init_user(void) {
-//    if (!is_keyboard_master()){
-//    xOrigin = analogReadPin(B4);
-//    yOrigin = analogReadPin(B5);
-//    }
-// }
-// #endif
+#ifdef PIMORONI_TRACKBALL_ENABLE
+void keyboard_post_init_user(void) {
+    pimoroni_trackball_set_rgbw(0,0,0,80);
+    // pointing_device_set_cpi(60000);
+}
+#endif
